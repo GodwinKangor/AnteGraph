@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "acme-procurement",
+  "version": "v2",
+  "currency": "USD",
+  "effective_date": "2026-12-01",
+  "rules": [
+    {
+      "id": "manager-baseline",
+      "priority": 100,
+      "when": {"all": [{"field": "amount_minor", "op": "gt", "value": 0}]},
+      "effect": {"type": "require_approval", "role": "manager", "stage": 1},
+      "explanation": "Every non-zero purchase requires the requester's manager."
+    },
+    {
+      "id": "security-new-software-vendor",
+      "priority": 300,
+      "when": {"all": [
+        {"field": "category", "op": "eq", "value": "software"},
+        {"field": "is_new_vendor", "op": "eq", "value": true}
+      ]},
+      "effect": {"type": "require_approval", "role": "security", "stage": 2},
+      "explanation": "New software vendors require a security review."
+    },
+    {
+      "id": "finance-software-threshold",
+      "priority": 200,
+      "when": {"all": [
+        {"field": "category", "op": "eq", "value": "software"},
+        {"field": "amount_minor", "op": "gt", "value": 1500000}
+      ]},
+      "effect": {"type": "require_approval", "role": "finance", "stage": 3},
+      "explanation": "Software purchases above $15,000.00 require finance approval."
+    },
+    {
+      "id": "legal-large-purchase",
+      "priority": 200,
+      "when": {"all": [{"field": "amount_minor", "op": "gte", "value": 5000000}]},
+      "effect": {"type": "require_approval", "role": "legal", "stage": 3},
+      "explanation": "Purchases of $50,000.00 or more require legal review."
+    },
+    {
+      "id": "high-risk-questionnaire",
+      "priority": 150,
+      "when": {"all": [{"field": "vendor_risk", "op": "in", "value": ["high", "unknown"]}]},
+      "effect": {"type": "require_evidence", "evidence": "security_questionnaire"},
+      "explanation": "High- or unknown-risk vendors must provide a security questionnaire."
+    },
+    {
+      "id": "block-prohibited-vendor",
+      "priority": 1000,
+      "when": {"all": [{"field": "vendor_risk", "op": "eq", "value": "prohibited"}]},
+      "effect": {"type": "block", "reason_code": "VENDOR_PROHIBITED"},
+      "explanation": "Purchases from prohibited vendors are blocked."
+    }
+  ]
+}
