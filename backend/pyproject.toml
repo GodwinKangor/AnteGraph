@@ -1,0 +1,44 @@
+[project]
+name = "antegraph"
+version = "0.1.0"
+description = "Predeployment verification and impact analysis for procurement approval policies"
+authors = [{ name = "GodwinKangor" }]
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.14.3",
+    "typer>=0.29.0",
+]
+
+[project.scripts]
+antegraph = "antegraph.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.170.15",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.4",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+packages = ["antegraph"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = ["perf: performance benchmarks (excluded from default runs)"]

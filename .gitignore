@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+dist/
+
+# Generated data (manifests are committed)
+datasets/*.jsonl
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+.env
