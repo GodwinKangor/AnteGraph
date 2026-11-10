@@ -96,9 +96,11 @@ class Condition(BaseModel):
     op: Op
     value: Any
 
-    @field_validator("field", mode="plain")
+    # "before" validators raise our own error codes, then pydantic's strict enum
+    # validation still runs (plain validators break enum serialization).
+    @field_validator("field", mode="before")
     @classmethod
-    def _check_field(cls, raw: Any) -> ConditionField:
+    def _check_field(cls, raw: Any) -> Any:
         if not isinstance(raw, str):
             raise _error("TYPE_ERROR", "field must be a string")
         if raw not in ConditionField.__members__.values():
@@ -106,11 +108,11 @@ class Condition(BaseModel):
                 "UNSUPPORTED_CONSTRUCT",
                 f"unsupported field {raw!r}; supported: {_choices(ConditionField)}",
             )
-        return ConditionField(raw)
+        return raw
 
-    @field_validator("op", mode="plain")
+    @field_validator("op", mode="before")
     @classmethod
-    def _check_op(cls, raw: Any, info: ValidationInfo) -> Op:
+    def _check_op(cls, raw: Any, info: ValidationInfo) -> Any:
         if not isinstance(raw, str):
             raise _error("TYPE_ERROR", "op must be a string")
         if raw not in Op.__members__.values():
@@ -123,7 +125,7 @@ class Condition(BaseModel):
                 "UNSUPPORTED_CONSTRUCT",
                 f"op {raw!r} is not supported for {field.value!r}; allowed: {allowed}",
             )
-        return op
+        return raw
 
     @field_validator("value", mode="plain")
     @classmethod
